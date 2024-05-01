@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require_relative 'client'
+
+path = ARGV[0]
+
+client = Client.new(path)
+client.start_download
