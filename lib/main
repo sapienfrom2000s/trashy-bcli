@@ -1,8 +1,20 @@
 #!/usr/bin/env ruby
 
 require_relative 'client'
+require_relative 'metainfo'
+require_relative 'tracker'
+require_relative 'http_tracker'
 
+require 'thread'
+require 'timeout'
+require 'bencode'
+require 'faraday'
+require 'digest/sha1'
+require 'colorize'
+
+$logger = Logger.new(STDOUT)
 path = ARGV[0]
 
 client = Client.new(path)
 client.start_download
+

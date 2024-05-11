@@ -1,6 +1,6 @@
-require 'bencode'
-
 class MetaInfo
+  attr_reader :metadata
+
   def initialize(file_path)
     @file_path = file_path
     @metadata = parse_torrent_file(file_path)
@@ -22,3 +22,4 @@ class MetaInfo
     raise e
   end
 end
+

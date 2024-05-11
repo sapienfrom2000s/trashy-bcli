@@ -1,30 +1,22 @@
-require_relative 'metainfo'
-require_relative 'http_tracker'
-
 class Client
+  attr_reader :peers, :metainfo, :trackers
+
   def initialize(path)
     @metainfo = MetaInfo.new(path)
-    @trackers = group_trackers(@metainfo.trackers)
+    @peers = [] # given by trackers
+    # @active_peers = Queue.new # handshake was successful @trackers = group_trackers(@metainfo.trackers)
   end
 
-  # press against all trackers at the same time
-  # In paralell what all will be happening?
-  # n trackers will pull peers in paralell
-
-  private
+  def start_download 
+    @trackers = init_trackers
+    Tracker.update_peer_list(@trackers[:http], peers) 
+  end
 
   def init_trackers
-    @trackers[:http].each do |tracker|
-      @http_trackers << HTTPTracker.new(tracker)
-    end
-  end
-
-  def group_trackers(trackers)
     hash = { udp: [], http: [] }
-    trackers.each do |tracker|
-      tracker = tracker.first
+    @metainfo.metadata['announce-list'].flatten.each do |tracker|
       hash[:udp] << tracker if tracker.start_with?('udp')
-      hash[:http] << tracker if tracker.start_with?('http')
+      hash[:http] << HTTPTracker.new(tracker, metainfo) if tracker.start_with?('http')
     end
     hash
   end
