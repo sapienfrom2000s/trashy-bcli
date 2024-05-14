@@ -22,4 +22,3 @@ class MetaInfo
     raise e
   end
 end
-
