@@ -1,24 +1,24 @@
 class Trackers
-  attr_reader :metainfo, :list
+  attr_reader :list, :peers
 
-  def initialize(metainfo)
-    @metainfo = metainfo
+  def initialize(peers)
+    @peers = peers
     @list = { http: [], udp: [] }
-    @metainfo.metadata['announce-list'].flatten.each do |tracker|
+    $metainfo.metadata['announce-list'].flatten.each do |tracker|
       @list[:udp] << tracker if tracker.start_with?('udp')
-      @list[:http] << HTTPTracker.new(tracker, metainfo) if tracker.start_with?('http')
+      @list[:http] << HTTPTracker.new(tracker) if tracker.start_with?('http')
     end
   end
 
-  def update_peer_list(peers)
+  def update_peer_list
     # iterate n trackers in phases(k at a time, k < n)
     # k threads at a time, wait for all 5 to finish and then go to next batch
     list[:http].each_slice(5) do |tracker_batch|
-      parallel_request_for_peers(tracker_batch, peers)
+      parallel_request_for_peers(tracker_batch)
     end
   end
 
-  def parallel_request_for_peers(trackers, peers)
+  def parallel_request_for_peers(trackers)
     mutex = Mutex.new
     arr = []
     trackers.each do |tracker|
@@ -32,7 +32,7 @@ class Trackers
         end
         res.each do |peer_data|
           mutex.synchronize do
-            peers.push(peer_data) # unless peers.include?(peer_data)
+            peers.add(peer_data) unless peers.peer_present?(peer_data)
           end
         end
       end

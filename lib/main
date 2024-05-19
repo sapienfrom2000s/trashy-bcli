@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
 require_relative 'base_service'
+require_relative 'peer'
+require_relative 'peers'
 require_relative 'trackers'
 require_relative 'tracker'
 require_relative 'http_tracker'
@@ -13,6 +15,7 @@ require 'bencode'
 require 'faraday'
 require 'digest/sha1'
 require 'colorize'
+require 'securerandom'
 
 $logger = Logger.new(STDOUT)
 path = ARGV[0]
