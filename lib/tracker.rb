@@ -1,8 +1,7 @@
 class Tracker < BaseService
-  attr_reader :source, :metainfo
+  attr_reader :source
 
-  def initialize(source, metainfo)
+  def initialize(source)
     @source = source
-    @metainfo = metainfo
   end
 end
