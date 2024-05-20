@@ -1,5 +1,7 @@
+require 'securerandom'
+
 class Client
-  ID = 'abc123456defio896gy0' 
+  ID = SecureRandom.alphanumeric(20)
 
   attr_reader :peers, :trackers
 
@@ -12,8 +14,14 @@ class Client
   def start_download
     trackers.update_peer_list
     puts peers.list.to_s.colorize(:green)
-    peers.list.each do |p|
-      p.handshake
+    peers.list.each_slice(10) do |peer_batch|
+      arr = []
+      peer_batch.each do |peer|
+        arr << Thread.new do
+          peer.handshake
+        end
+      end
+      arr.each(&:join)
     end
   end
 end

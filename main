@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+require_relative 'lib/base_service'
+require_relative 'lib/peer'
+require_relative 'lib/peers'
+require_relative 'lib/trackers'
+require_relative 'lib/tracker'
+require_relative 'lib/http_tracker'
+require_relative 'lib/metainfo'
+require_relative 'lib/client'
+
+require 'thread'
+require 'timeout'
+require 'bencode'
+require 'faraday'
+require 'digest/sha1'
+require 'colorize'
+require 'securerandom'
+require 'yaml'
+
+$logger = Logger.new(STDOUT)
+path = ARGV[0]
+
+client = Client.new(path)
+client.start_download
